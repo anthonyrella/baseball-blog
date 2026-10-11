@@ -1,46 +1,102 @@
 /*
- * Theme: Classic (base). Gold, brown, and cream inspired by thisgreatgame.com.
- * Primary = gold, secondary = brown, accent = yellow (calls to action only).
+ * Theme: Scorecard. Minimal and reading-first, with scorebook details:
+ * grid-paper accents, typewriter labels, and a red stitch line.
+ * Primary = gold, secondary = brown ink, accent = yellow (calls to action only).
  */
 
 :root {
-	--color-primary: #c9971c;
-	--color-secondary: #4a2e1a;
-	--color-on-secondary: #f7efd9;
-	--color-accent: #f2c230;
-	--color-accent-hover: #ffd451;
-	--color-on-accent: #2e1b0e;
+	--color-primary: #c99a2e;
+	--color-secondary: #3a2516;
+	--color-on-secondary: #fdf9f0;
+	--color-accent: #f0b90b;
+	--color-accent-hover: #ffc929;
+	--color-on-accent: #24160b;
 
-	--color-bg: #fbf6ea;
-	--color-surface: #f3e8cc;
-	--color-text: #2e1b0e;
-	--color-heading: #3b2414;
-	--color-muted: #6e5843;
-	--color-border: #dcc9a0;
-	--color-label: #8a5a0e; /* small gold text, e.g. category labels (readable gold) */
-	--color-link: #7a4a1e;
-	--color-link-hover: #a8741a;
+	--color-bg: #fdf9f0;
+	--color-surface: #f5edda;
+	--color-text: #2b1c10;
+	--color-heading: #3a2516;
+	--color-muted: #6e5a46;
+	--color-border: #e2d4b8;
+	--color-label: #8a5a0e;
+	--color-link: #7c4a17;
+	--color-link-hover: #a5650f;
+	--color-stitch: #b23a2a;
 
-	--radius: 6px;
-	--shadow: 0 2px 4px rgb(46 27 14 / 8%), 0 10px 24px rgb(46 27 14 / 10%);
-	--max-width: 72rem;
+	--radius: 0;
+	--shadow: none;
+	--max-width: 64rem;
+
+	--grid-paper:
+		linear-gradient(rgb(58 37 22 / 7%) 1px, transparent 1px) 0 0 / 22px 22px,
+		linear-gradient(90deg, rgb(58 37 22 / 7%) 1px, transparent 1px) 0 0 / 22px 22px;
+}
+
+h1,
+h2,
+h3 {
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.eyebrow,
+.meta,
+.byline,
+.asked,
+.tag {
+	font-family: var(--font-mono);
+}
+
+.eyebrow {
+	font-weight: 700;
+	letter-spacing: 0.08em;
+}
+
+/* Red stitching, like the seams of a baseball. */
+.stitch {
+	height: 8px;
+	background: repeating-linear-gradient(115deg, transparent 0 6px, var(--color-stitch) 6px 8px, transparent 8px 14px)
+		center / 100% 100%;
+	opacity: 0.85;
 }
 
 .site-header {
-	background: var(--color-secondary);
-	color: var(--color-on-secondary);
-	border-bottom: 5px solid var(--color-primary);
+	background: var(--color-bg);
 }
 
 .site-footer {
-	background: var(--color-secondary);
-	color: var(--color-on-secondary);
-	border-top: 5px solid var(--color-primary);
+	background: var(--grid-paper), var(--color-surface);
+	border-top: 2px solid var(--color-secondary);
 }
 
 .card {
-	background: #fff;
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow);
+	background: var(--color-bg);
+	border: 2px solid var(--color-secondary);
+}
+
+.btn {
+	border-radius: 0;
+	font-family: var(--font-mono);
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.btn-accent {
+	border-color: var(--color-secondary);
+}
+
+.pill-nav a {
+	border-radius: 0;
+	border-width: 2px;
+	border-color: var(--color-secondary);
+	font-family: var(--font-mono);
+}
+
+.tag {
+	border-radius: 0;
+}
+
+.prose blockquote {
+	background: var(--grid-paper), var(--color-surface);
+	border-left-color: var(--color-stitch);
 }

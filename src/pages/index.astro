@@ -1,133 +1,290 @@
 ---
-import BookCard from '../components/BookCard.astro';
-import PostCard from '../components/PostCard.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getBooks, getPosts, getQuestions } from '../lib/content';
-import { SITE } from '../site.config';
+import { CATEGORIES, type CategoryKey, SITE } from '../site.config';
 
-const posts = await getPosts();
-const featured = posts.find((p) => p.data.featured) ?? posts[0];
-const latest = posts.filter((p) => p !== featured).slice(0, 3);
-const books = (await getBooks()).filter((b) => b.data.status === 'published');
-const [latestQuestion] = await getQuestions();
+// Scorebook-style "positions" for each category.
+const POSITION: Record<CategoryKey, string> = {
+	stories: 'ST',
+	thoughts: 'TH',
+	articles: 'AR',
+	'book-news': 'BK',
+};
+
+const lineup = (await getPosts()).slice(0, 9);
+const books = await getBooks();
+const questions = (await getQuestions()).slice(0, 3);
 ---
 
 <BaseLayout>
-	<section class="hero">
+	<section class="section intro">
 		<div class="container">
-			<div class="hero-inner">
-				<p class="eyebrow">{SITE.author}</p>
-				<h1>{SITE.tagline}</h1>
-				<p class="hero-lede">
-					Stories of the heroes, legends, and wonderfully strange moments that make baseball the greatest game there is.
-				</p>
-				<p class="hero-actions">
-					<a class="btn btn-accent" href="/books/">
-						Explore the books
-					</a>
-					<a class="btn" href="/blog/">
-						Read the latest
-					</a>
-				</p>
-			</div>
+			<p class="eyebrow">Welcome to the ballpark</p>
+			<h1>{SITE.tagline}.</h1>
+			<p class="lede">
+				I'm {SITE.author}, and I write about the heroes, the legends, and the wonderfully strange moments that make
+				baseball the greatest game there is. Pull up a seat.
+			</p>
 		</div>
 	</section>
 
-	{featured && (
-		<section class="section">
-			<div class="container">
-				<p class="eyebrow">Featured</p>
-				<PostCard post={featured} size="large" />
-			</div>
-		</section>
-	)}
-
-	{latest.length > 0 && (
-		<section class="section band">
-			<div class="container">
-				<div class="section-heading">
-					<h2>Latest from the press box</h2>
-					<a href="/blog/">All writing →</a>
-				</div>
-				<div class="grid">
-					{latest.map((post) => (
-						<PostCard post={post} />
-					))}
-				</div>
-			</div>
-		</section>
-	)}
+	<section class="container lineup-card" aria-labelledby="lineup-title">
+		<div class="card-head">
+			<h2 id="lineup-title">Today's Lineup</h2>
+			<a href="/blog/">Full roster →</a>
+		</div>
+		<table>
+			<thead>
+				<tr>
+					<th scope="col">No.</th>
+					<th scope="col">Pos.</th>
+					<th scope="col">Story</th>
+					<th scope="col" class="date-col">
+						Date
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				{lineup.map((post, i) => (
+					<tr>
+						<td class="num">{i + 1}</td>
+						<td class="pos">
+							<abbr title={CATEGORIES[post.data.category].label}>{POSITION[post.data.category]}</abbr>
+						</td>
+						<td class="story">
+							<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+							<span class="muted">{post.data.description}</span>
+						</td>
+						<td class="date-col muted">
+							<FormattedDate date={post.data.pubDate} />
+						</td>
+					</tr>
+				))}
+			</tbody>
+		</table>
+	</section>
 
 	<section class="section">
-		<div class="container">
-			<div class="section-heading">
-				<h2>Books by {SITE.authorShort}</h2>
-				<a href="/books/">All books →</a>
+		<div class="container two-up">
+			<div>
+				<h2>On the shelf</h2>
+				<ul class="shelf">
+					{books.map((book) => (
+						<li>
+							{book.data.cover ? (
+								<img src={book.data.cover} alt="" loading="lazy" />
+							) : (
+								<span class="blank-cover" aria-hidden="true"></span>
+							)}
+							<span>
+								<a href="/books/">{book.data.title}</a>
+								<span class="muted">
+									{book.data.subtitle}
+									{book.data.status === 'coming-soon' && ' · Coming soon'}
+								</span>
+							</span>
+						</li>
+					))}
+				</ul>
 			</div>
-			<div class="books">
-				{books.map((book) => (
-					<BookCard book={book} showDescription={false} />
-				))}
-			</div>
-		</div>
-	</section>
-
-	<section class="section band">
-		<div class="narrow qa-teaser">
-			<p class="eyebrow">Q&amp;A</p>
-			<h2>Got a question about the game?</h2>
-			{latestQuestion && (
+			<div>
+				<h2>From the mailbag</h2>
+				<ul class="mailbag">
+					{questions.map((q) => (
+						<li>
+							<a href={`/questions/#${q.id}`}>{q.data.question}</a>
+							<span class="muted">— {q.data.askedBy}</span>
+						</li>
+					))}
+				</ul>
 				<p>
-					Most recently answered: <a href={`/questions/#${latestQuestion.id}`}>{latestQuestion.data.question}</a>
+					<a class="btn btn-accent" href="/questions/#ask">
+						Ask {SITE.authorShort} a question
+					</a>
 				</p>
-			)}
-			<p>
-				<a class="btn btn-accent" href="/questions/#ask">
-					Ask {SITE.authorShort}
-				</a>
-			</p>
+			</div>
 		</div>
 	</section>
 </BaseLayout>
 
 <style>
-	.hero {
-		background: radial-gradient(circle at 85% 20%, rgb(242 194 48 / 25%), transparent 45%), var(--color-surface);
+	.intro {
+		padding-bottom: 2.5rem;
+	}
+
+	.intro h1 {
+		max-width: 40rem;
+		font-size: clamp(2.2rem, 5vw, 3.2rem);
+	}
+
+	.lede {
+		max-width: 40rem;
+		font-size: 1.3rem;
+	}
+
+	.lineup-card {
+		padding: 0;
+		border: 2px solid var(--color-secondary);
+		background: var(--grid-paper), var(--color-bg);
+	}
+
+	.card-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1rem;
+		padding: 0.9rem 1.25rem;
+		background: var(--color-secondary);
+		color: var(--color-on-secondary);
+	}
+
+	.card-head h2 {
+		margin: 0;
+		font-size: 1.4rem;
+		color: inherit;
+	}
+
+	.card-head a {
+		white-space: nowrap;
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-weight: 700;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	th {
+		padding: 0.5rem 1.25rem;
+		border-bottom: 2px solid var(--color-secondary);
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		text-align: left;
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+
+	td {
+		padding: 1rem 1.25rem;
+		border-bottom: 1px solid var(--color-border);
+		vertical-align: top;
+	}
+
+	tbody tr:last-child td {
+		border-bottom: 0;
+	}
+
+	tbody tr:hover {
+		background: rgb(240 185 11 / 12%);
+	}
+
+	.num,
+	.pos {
+		width: 1%;
+		font-family: var(--font-mono);
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	.num {
+		font-size: 1.3rem;
+		color: var(--color-stitch);
+	}
+
+	.pos abbr {
+		text-decoration: none;
+		color: var(--color-label);
+	}
+
+	.story a {
+		display: block;
+		font-family: var(--font-display);
+		font-size: 1.2rem;
+		font-weight: 700;
+		color: var(--color-heading);
+		text-decoration: none;
+	}
+
+	.story a:hover {
+		color: var(--color-link);
+		text-decoration: underline;
+	}
+
+	.story .muted {
+		font-size: 1rem;
+	}
+
+	.date-col {
+		width: 1%;
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		white-space: nowrap;
+	}
+
+	.two-up {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 3rem;
+	}
+
+	.two-up h2 {
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid var(--color-secondary);
+		font-size: 1.5rem;
+	}
+
+	.shelf,
+	.mailbag {
+		list-style: none;
+		margin: 0 0 1.5rem;
+		padding: 0;
+	}
+
+	.shelf li {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+		padding-block: 0.75rem;
 		border-bottom: 1px solid var(--color-border);
 	}
 
-	.hero-inner {
-		padding-block: clamp(3rem, 9vw, 6.5rem);
-		max-width: 52rem;
+	.shelf img,
+	.blank-cover {
+		width: 3.25rem;
+		aspect-ratio: 2 / 3;
+		flex-shrink: 0;
 	}
 
-	.hero h1 {
-		font-size: clamp(2.5rem, 6vw, 4.2rem);
+	.blank-cover {
+		border: 2px dashed var(--color-border);
 	}
 
-	.hero-lede {
-		font-size: 1.35rem;
-		max-width: 38rem;
+	.shelf a,
+	.mailbag a {
+		display: block;
+		font-weight: 700;
 	}
 
-	.hero-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin: 2rem 0 0;
+	.mailbag li {
+		padding-block: 0.75rem;
+		border-bottom: 1px solid var(--color-border);
 	}
 
-	.band {
-		background: var(--color-surface);
-	}
+	@media (max-width: 44rem) {
+		.date-col {
+			display: none;
+		}
 
-	.books {
-		display: grid;
-		gap: 2rem;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
-	}
+		th,
+		td {
+			padding-inline: 0.75rem;
+		}
 
-	.qa-teaser {
-		text-align: center;
+		.two-up {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

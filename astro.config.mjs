@@ -19,11 +19,19 @@ export default defineConfig({
 		},
 		{
 			provider: fontProviders.google(),
-			name: 'Playfair Display',
+			name: 'Roboto Slab',
 			cssVariable: '--font-display',
-			weights: [700, 900],
+			weights: [400, 700],
 			styles: ['normal'],
-			fallbacks: ['Georgia', 'serif'],
+			fallbacks: ['Rockwell', 'Georgia', 'serif'],
+		},
+		{
+			provider: fontProviders.google(),
+			name: 'Courier Prime',
+			cssVariable: '--font-mono',
+			weights: [400, 700],
+			styles: ['normal'],
+			fallbacks: ['Courier New', 'monospace'],
 		},
 	],
 });
