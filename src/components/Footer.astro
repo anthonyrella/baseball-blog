@@ -1,20 +1,27 @@
 ---
-import { NAV, SITE } from '../site.config';
+import { CATEGORIES, NAV, SITE } from '../site.config';
 
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-	<div class="container inner">
-		<div>
+	<div class="container cols">
+		<div class="about">
 			<p class="name">{SITE.title}</p>
-			<p class="tagline">{SITE.tagline}</p>
+			<p>{SITE.description}</p>
 		</div>
-		<nav aria-label="Footer">
+		<nav aria-label="Sections">
+			<p class="heading">Sections</p>
 			{NAV.map(({ href, label }) => (
 				<a href={href}>{label}</a>
 			))}
-			<a href="/rss.xml">RSS</a>
+		</nav>
+		<nav aria-label="Categories">
+			<p class="heading">Writing</p>
+			{Object.entries(CATEGORIES).map(([key, { label }]) => (
+				<a href={`/blog/category/${key}/`}>{label}</a>
+			))}
+			<a href="/rss.xml">RSS feed</a>
 		</nav>
 	</div>
 	<div class="container">
@@ -25,12 +32,11 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-	.inner {
-		display: flex;
-		justify-content: space-between;
-		gap: 1.5rem;
-		flex-wrap: wrap;
-		padding-block: 2.5rem 1.5rem;
+	.cols {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr;
+		gap: 2.5rem;
+		padding-block: 3.5rem 2rem;
 	}
 
 	p {
@@ -38,34 +44,58 @@ const year = new Date().getFullYear();
 	}
 
 	.name {
+		margin-bottom: 0.75rem;
 		font-family: var(--font-display);
-		font-size: 1.4rem;
+		font-size: 1.5rem;
 		font-weight: 700;
+		text-transform: uppercase;
 		color: var(--color-accent);
 	}
 
-	.tagline {
-		opacity: 0.85;
+	.about p:not(.name) {
+		max-width: 28rem;
+		opacity: 0.8;
 	}
 
 	nav {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 1.5rem;
-		align-items: center;
+		display: grid;
+		align-content: start;
+		gap: 0.4rem;
+	}
+
+	.heading {
+		margin-bottom: 0.4rem;
+		font-family: var(--font-display);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-primary);
 	}
 
 	nav a {
 		color: inherit;
+		text-decoration: none;
+		opacity: 0.85;
 	}
 
 	nav a:hover {
 		color: var(--color-accent);
+		opacity: 1;
 	}
 
 	.copyright {
-		padding-bottom: 2rem;
+		padding-block: 1.5rem 2rem;
+		border-top: 1px solid rgb(255 248 231 / 15%);
 		font-size: 0.9rem;
-		opacity: 0.75;
+		opacity: 0.7;
+	}
+
+	@media (max-width: 48rem) {
+		.cols {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.about {
+			grid-column: 1 / -1;
+		}
 	}
 </style>

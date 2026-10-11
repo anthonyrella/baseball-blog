@@ -1,46 +1,135 @@
 /*
- * Theme: Classic (base). Gold, brown, and cream inspired by thisgreatgame.com.
- * Primary = gold, secondary = brown, accent = yellow (calls to action only).
+ * Theme: Magazine. A modern sports-magazine layout in the gold and brown palette.
+ * Primary = gold, secondary = dark brown, accent = bright yellow (calls to action only).
  */
 
 :root {
-	--color-primary: #c9971c;
-	--color-secondary: #4a2e1a;
-	--color-on-secondary: #f7efd9;
-	--color-accent: #f2c230;
-	--color-accent-hover: #ffd451;
-	--color-on-accent: #2e1b0e;
+	--color-primary: #d4a017;
+	--color-secondary: #23160c;
+	--color-on-secondary: #fff8e7;
+	--color-accent: #f5c518;
+	--color-accent-hover: #ffd43b;
+	--color-on-accent: #1a1008;
 
-	--color-bg: #fbf6ea;
-	--color-surface: #f3e8cc;
-	--color-text: #2e1b0e;
-	--color-heading: #3b2414;
-	--color-muted: #6e5843;
-	--color-border: #dcc9a0;
-	--color-label: #8a5a0e; /* small gold text, e.g. category labels (readable gold) */
-	--color-link: #7a4a1e;
-	--color-link-hover: #a8741a;
+	--color-bg: #ffffff;
+	--color-surface: #f7f1e3;
+	--color-text: #231a12;
+	--color-heading: #1a1008;
+	--color-muted: #6b5a49;
+	--color-border: #e6dccb;
+	--color-label: #8a5a0e;
+	--color-link: #8a4f12;
+	--color-link-hover: #b06a10;
 
-	--radius: 6px;
-	--shadow: 0 2px 4px rgb(46 27 14 / 8%), 0 10px 24px rgb(46 27 14 / 10%);
-	--max-width: 72rem;
+	--radius: 4px;
+	--shadow: 0 1px 2px rgb(35 22 12 / 8%), 0 8px 20px rgb(35 22 12 / 8%);
+	--max-width: 76rem;
+}
+
+h1,
+h2,
+h3 {
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+}
+
+h1 {
+	line-height: 1.05;
+}
+
+.prose h2,
+.prose h3 {
+	text-transform: none;
 }
 
 .site-header {
 	background: var(--color-secondary);
 	color: var(--color-on-secondary);
-	border-bottom: 5px solid var(--color-primary);
 }
 
 .site-footer {
 	background: var(--color-secondary);
 	color: var(--color-on-secondary);
-	border-top: 5px solid var(--color-primary);
 }
 
 .card {
-	background: #fff;
-	border: 1px solid var(--color-border);
+	background: var(--color-bg);
 	border-radius: var(--radius);
 	box-shadow: var(--shadow);
+	transition:
+		transform 0.2s,
+		box-shadow 0.2s;
+}
+
+.card:hover {
+	transform: translateY(-3px);
+	box-shadow:
+		0 2px 4px rgb(35 22 12 / 10%),
+		0 16px 32px rgb(35 22 12 / 14%);
+}
+
+.book.card:hover {
+	transform: none;
+}
+
+/* Section headings with a gold underline bar. */
+.section-heading h2,
+.bar-title {
+	position: relative;
+	padding-bottom: 0.6rem;
+	font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.section-heading h2::after,
+.bar-title::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 3.5rem;
+	height: 5px;
+	background: var(--color-primary);
+}
+
+.section-heading a {
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-size: 0.9rem;
+	text-decoration: none;
+}
+
+.btn {
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.pill-nav a {
+	border-radius: var(--radius);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	font-size: 0.85rem;
+}
+
+/* Generated cover art for posts without a photo. */
+.post-art {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 16 / 9;
+	background:
+		radial-gradient(circle at 75% 20%, rgb(245 197 24 / 45%), transparent 55%),
+		linear-gradient(135deg, #3a2414, #1a1008);
+	color: var(--color-accent);
+	overflow: hidden;
+}
+
+.post-art svg {
+	width: 38%;
+	max-width: 9rem;
+	opacity: 0.9;
+}
+
+.site-footer {
+	border-top: 5px solid var(--color-primary);
 }

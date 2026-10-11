@@ -1,59 +1,21 @@
 ---
-import BookCard from '../components/BookCard.astro';
 import PostCard from '../components/PostCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getBooks, getPosts, getQuestions } from '../lib/content';
-import { SITE } from '../site.config';
+import { CATEGORIES, SITE } from '../site.config';
 
 const posts = await getPosts();
 const featured = posts.find((p) => p.data.featured) ?? posts[0];
-const latest = posts.filter((p) => p !== featured).slice(0, 3);
+const latest = posts.filter((p) => p !== featured).slice(0, 6);
 const books = (await getBooks()).filter((b) => b.data.status === 'published');
-const [latestQuestion] = await getQuestions();
+const questions = (await getQuestions()).slice(0, 3);
 ---
 
 <BaseLayout>
-	<section class="hero">
-		<div class="container">
-			<div class="hero-inner">
-				<p class="eyebrow">{SITE.author}</p>
-				<h1>{SITE.tagline}</h1>
-				<p class="hero-lede">
-					Stories of the heroes, legends, and wonderfully strange moments that make baseball the greatest game there is.
-				</p>
-				<p class="hero-actions">
-					<a class="btn btn-accent" href="/books/">
-						Explore the books
-					</a>
-					<a class="btn" href="/blog/">
-						Read the latest
-					</a>
-				</p>
-			</div>
-		</div>
-	</section>
-
 	{featured && (
-		<section class="section">
+		<section class="featured">
 			<div class="container">
-				<p class="eyebrow">Featured</p>
 				<PostCard post={featured} size="large" />
-			</div>
-		</section>
-	)}
-
-	{latest.length > 0 && (
-		<section class="section band">
-			<div class="container">
-				<div class="section-heading">
-					<h2>Latest from the press box</h2>
-					<a href="/blog/">All writing →</a>
-				</div>
-				<div class="grid">
-					{latest.map((post) => (
-						<PostCard post={post} />
-					))}
-				</div>
 			</div>
 		</section>
 	)}
@@ -61,73 +23,201 @@ const [latestQuestion] = await getQuestions();
 	<section class="section">
 		<div class="container">
 			<div class="section-heading">
-				<h2>Books by {SITE.authorShort}</h2>
-				<a href="/books/">All books →</a>
+				<h2>Latest</h2>
+				<a href="/blog/">View all →</a>
 			</div>
-			<div class="books">
-				{books.map((book) => (
-					<BookCard book={book} showDescription={false} />
+			<div class="grid">
+				{latest.map((post) => (
+					<PostCard post={post} />
 				))}
 			</div>
 		</div>
 	</section>
 
-	<section class="section band">
-		<div class="narrow qa-teaser">
-			<p class="eyebrow">Q&amp;A</p>
-			<h2>Got a question about the game?</h2>
-			{latestQuestion && (
+	<section class="section categories">
+		<div class="container">
+			<h2 class="bar-title">Browse by section</h2>
+			<div class="category-grid">
+				{Object.entries(CATEGORIES).map(([key, { label, blurb }]) => (
+					<a class="category" href={`/blog/category/${key}/`}>
+						<span class="category-name">{label}</span>
+						<span class="category-blurb">{blurb}</span>
+					</a>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section dark">
+		<div class="container split">
+			<div>
+				<h2 class="bar-title">Books by {SITE.authorShort}</h2>
+				<div class="covers">
+					{books.map((book) => (
+						<a href="/books/" class="cover">
+							{book.data.cover && <img src={book.data.cover} alt={`Cover of ${book.data.title}`} loading="lazy" />}
+							<span class="cover-title">{book.data.title}</span>
+						</a>
+					))}
+				</div>
 				<p>
-					Most recently answered: <a href={`/questions/#${latestQuestion.id}`}>{latestQuestion.data.question}</a>
+					<a class="btn btn-accent" href="/books/">
+						See all books
+					</a>
 				</p>
-			)}
-			<p>
-				<a class="btn btn-accent" href="/questions/#ask">
-					Ask {SITE.authorShort}
-				</a>
-			</p>
+			</div>
+
+			<div class="qa">
+				<h2 class="bar-title">Ask {SITE.authorShort}</h2>
+				<p>Got a question about a player, a team, or one of the books? Mike answers reader questions right here.</p>
+				<ul>
+					{questions.map((q) => (
+						<li>
+							<a href={`/questions/#${q.id}`}>{q.data.question}</a>
+						</li>
+					))}
+				</ul>
+				<p>
+					<a class="btn btn-light" href="/questions/#ask">
+						Send a question
+					</a>
+				</p>
+			</div>
 		</div>
 	</section>
 </BaseLayout>
 
 <style>
-	.hero {
-		background: radial-gradient(circle at 85% 20%, rgb(242 194 48 / 25%), transparent 45%), var(--color-surface);
-		border-bottom: 1px solid var(--color-border);
+	.featured {
+		padding-top: 2.5rem;
 	}
 
-	.hero-inner {
-		padding-block: clamp(3rem, 9vw, 6.5rem);
-		max-width: 52rem;
-	}
-
-	.hero h1 {
-		font-size: clamp(2.5rem, 6vw, 4.2rem);
-	}
-
-	.hero-lede {
-		font-size: 1.35rem;
-		max-width: 38rem;
-	}
-
-	.hero-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin: 2rem 0 0;
-	}
-
-	.band {
+	.categories {
 		background: var(--color-surface);
 	}
 
-	.books {
+	.category-grid {
 		display: grid;
-		gap: 2rem;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+		gap: 1rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+		margin-top: 1.75rem;
 	}
 
-	.qa-teaser {
-		text-align: center;
+	.category {
+		display: grid;
+		gap: 0.4rem;
+		padding: 1.5rem;
+		background: var(--color-bg);
+		border-left: 5px solid var(--color-primary);
+		border-radius: var(--radius);
+		color: var(--color-text);
+		text-decoration: none;
+		transition:
+			border-color 0.2s,
+			transform 0.2s;
+	}
+
+	.category:hover {
+		color: var(--color-text);
+		border-color: var(--color-secondary);
+		transform: translateX(3px);
+	}
+
+	.category-name {
+		font-family: var(--font-display);
+		font-size: 1.35rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.category-blurb {
+		color: var(--color-muted);
+	}
+
+	.dark {
+		background: var(--color-secondary);
+		color: var(--color-on-secondary);
+	}
+
+	.dark h2 {
+		color: var(--color-on-secondary);
+	}
+
+	.split {
+		display: grid;
+		grid-template-columns: 3fr 2fr;
+		gap: 4rem;
+	}
+
+	.covers {
+		display: flex;
+		gap: 1.5rem;
+		margin-block: 1.75rem;
+	}
+
+	.cover {
+		display: grid;
+		gap: 0.6rem;
+		width: 11rem;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.cover img {
+		border-radius: 2px;
+		box-shadow: 0 10px 30px rgb(0 0 0 / 45%);
+		transition: transform 0.2s;
+	}
+
+	.cover:hover img {
+		transform: translateY(-4px) rotate(-1deg);
+	}
+
+	.cover-title {
+		font-weight: 700;
+		line-height: 1.25;
+	}
+
+	.qa ul {
+		list-style: none;
+		margin: 1.5rem 0;
+		padding: 0;
+	}
+
+	.qa li {
+		padding-block: 0.8rem;
+		border-bottom: 1px solid rgb(255 248 231 / 15%);
+	}
+
+	.qa li a {
+		color: inherit;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.qa li a::before {
+		content: 'Q. ';
+		color: var(--color-accent);
+	}
+
+	.qa li a:hover {
+		color: var(--color-accent);
+	}
+
+	.btn-light {
+		border-color: var(--color-on-secondary);
+		color: var(--color-on-secondary);
+	}
+
+	.btn-light:hover {
+		background: var(--color-on-secondary);
+		color: var(--color-secondary);
+	}
+
+	@media (max-width: 56rem) {
+		.split {
+			grid-template-columns: 1fr;
+			gap: 3rem;
+		}
 	}
 </style>

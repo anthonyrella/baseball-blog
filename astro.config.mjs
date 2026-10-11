@@ -19,11 +19,11 @@ export default defineConfig({
 		},
 		{
 			provider: fontProviders.google(),
-			name: 'Playfair Display',
+			name: 'Oswald',
 			cssVariable: '--font-display',
-			weights: [700, 900],
+			weights: [500, 700],
 			styles: ['normal'],
-			fallbacks: ['Georgia', 'serif'],
+			fallbacks: ['Impact', 'Arial Narrow', 'sans-serif'],
 		},
 	],
 });
