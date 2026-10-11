@@ -1,0 +1,74 @@
+---
+import { ASK_FORM, SITE } from '../site.config';
+---
+
+<form class="ask-form card" action={ASK_FORM.endpoint} method="POST" data-ask-form>
+	<input type="hidden" name="access_key" value={ASK_FORM.accessKey} />
+	<input type="hidden" name="subject" value={`New question for ${SITE.title}`} />
+	<input type="hidden" name="from_name" value={SITE.title} />
+	<!-- Honeypot: bots fill this in, people never see it. -->
+	<input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" />
+
+	<div class="field">
+		<label for="ask-name">Your name</label>
+		<input id="ask-name" name="name" autocomplete="given-name" required />
+	</div>
+	<div class="field">
+		<label for="ask-email">
+			Email <span class="muted">(never published)</span>
+		</label>
+		<input id="ask-email" name="email" type="email" autocomplete="email" required />
+	</div>
+	<div class="field">
+		<label for="ask-question">Your question</label>
+		<textarea id="ask-question" name="message" required></textarea>
+	</div>
+	<button class="btn btn-accent" type="submit">
+		Send my question
+	</button>
+	<p class="status" role="status" aria-live="polite"></p>
+</form>
+
+<style>
+	.ask-form {
+		padding: 1.75rem;
+	}
+
+	.status {
+		margin: 1rem 0 0;
+		font-weight: 700;
+	}
+
+	.status:empty {
+		display: none;
+	}
+</style>
+
+<script>
+	// Submit without leaving the page; falls back to a normal POST if JavaScript is off.
+	for (const form of document.querySelectorAll<HTMLFormElement>('[data-ask-form]')) {
+		const status = form.querySelector<HTMLElement>('.status')!;
+		const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			button.disabled = true;
+			status.textContent = 'Sending…';
+			try {
+				const response = await fetch(form.action, {
+					method: 'POST',
+					headers: { Accept: 'application/json' },
+					body: new FormData(form),
+				});
+				const result = await response.json();
+				if (!response.ok || !result.success) throw new Error(result.message);
+				form.reset();
+				status.textContent = 'Thanks! Your question is on its way to Mike.';
+			} catch {
+				status.textContent = 'Sorry, something went wrong. Please try again in a moment.';
+			} finally {
+				button.disabled = false;
+			}
+		});
+	}
+</script>

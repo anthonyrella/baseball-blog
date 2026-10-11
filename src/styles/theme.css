@@ -1,0 +1,46 @@
+/*
+ * Theme: Classic (base). Gold, brown, and cream inspired by thisgreatgame.com.
+ * Primary = gold, secondary = brown, accent = yellow (calls to action only).
+ */
+
+:root {
+	--color-primary: #c9971c;
+	--color-secondary: #4a2e1a;
+	--color-on-secondary: #f7efd9;
+	--color-accent: #f2c230;
+	--color-accent-hover: #ffd451;
+	--color-on-accent: #2e1b0e;
+
+	--color-bg: #fbf6ea;
+	--color-surface: #f3e8cc;
+	--color-text: #2e1b0e;
+	--color-heading: #3b2414;
+	--color-muted: #6e5843;
+	--color-border: #dcc9a0;
+	--color-label: #8a5a0e; /* small gold text, e.g. category labels (readable gold) */
+	--color-link: #7a4a1e;
+	--color-link-hover: #a8741a;
+
+	--radius: 6px;
+	--shadow: 0 2px 4px rgb(46 27 14 / 8%), 0 10px 24px rgb(46 27 14 / 10%);
+	--max-width: 72rem;
+}
+
+.site-header {
+	background: var(--color-secondary);
+	color: var(--color-on-secondary);
+	border-bottom: 5px solid var(--color-primary);
+}
+
+.site-footer {
+	background: var(--color-secondary);
+	color: var(--color-on-secondary);
+	border-top: 5px solid var(--color-primary);
+}
+
+.card {
+	background: #fff;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+}

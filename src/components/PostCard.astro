@@ -1,0 +1,96 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { readingTime } from '../lib/content';
+import { CATEGORIES } from '../site.config';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	post: CollectionEntry<'posts'>;
+	size?: 'default' | 'large';
+}
+
+const { post, size = 'default' } = Astro.props;
+const { title, description, pubDate, category, heroImage, heroAlt, draft } = post.data;
+---
+
+<article class:list={['post-card card', size]}>
+	{heroImage && (
+		<a href={`/blog/${post.id}/`} tabindex="-1" aria-hidden="true">
+			<img src={heroImage} alt={heroAlt ?? ''} loading="lazy" />
+		</a>
+	)}
+	<div class="body">
+		<p class="eyebrow">
+			<a href={`/blog/category/${category}/`}>{CATEGORIES[category].label}</a>
+			{draft && <span class="draft">Draft</span>}
+		</p>
+		<h3>
+			<a href={`/blog/${post.id}/`}>{title}</a>
+		</h3>
+		<p class="description">{description}</p>
+		<p class="meta muted">
+			<FormattedDate date={pubDate} /> · {readingTime(post.body)}
+		</p>
+	</div>
+</article>
+
+<style>
+	.post-card {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	.post-card img {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+	}
+
+	.body {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 1.4rem 1.5rem 1.25rem;
+	}
+
+	.eyebrow a {
+		color: var(--color-label);
+		text-decoration: none;
+	}
+
+	.draft {
+		margin-left: 0.5rem;
+		padding: 0.1em 0.5em;
+		background: var(--color-accent);
+		color: var(--color-on-accent);
+		border-radius: 4px;
+	}
+
+	h3 a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	h3 a:hover {
+		color: var(--color-link-hover);
+	}
+
+	.description {
+		margin: 0 0 1rem;
+		flex: 1;
+	}
+
+	.meta {
+		margin: 0;
+		font-size: 0.9rem;
+	}
+
+	.large h3 {
+		font-size: clamp(1.7rem, 3vw, 2.3rem);
+	}
+
+	.large .description {
+		font-size: 1.15rem;
+	}
+</style>

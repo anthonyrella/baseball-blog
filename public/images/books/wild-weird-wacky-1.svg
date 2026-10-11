@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Placeholder cover: Wild, Weird &amp; Wacky Tales from the Ballpark · Vol. 1">
+  <rect width="400" height="600" fill="#d9a521"/>
+  <rect x="20" y="20" width="360" height="560" fill="none" stroke="#3b2414" stroke-width="3"/>
+  <g transform="translate(200 250)" fill="none" stroke="#3b2414" stroke-width="4">
+    <rect x="-70" y="-70" width="140" height="140" transform="rotate(45)"/>
+    <circle r="12" fill="#3b2414"/>
+  </g>
+  <text x="200" y="430" text-anchor="middle" font-family="Georgia, serif" font-size="28" font-weight="700" fill="#3b2414">Wild, Weird &amp; Wacky</text>
+  <text x="200" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="20" font-style="italic" fill="#3b2414">Tales from the Ballpark · Vol. 1</text>
+  <text x="200" y="545" text-anchor="middle" font-family="Georgia, serif" font-size="18" letter-spacing="3" fill="#3b2414">MICHAEL JANACEK</text>
+</svg>

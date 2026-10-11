@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Placeholder cover: Fields of Glory Tales from the Diamond">
+  <rect width="400" height="600" fill="#4a2e1a"/>
+  <rect x="20" y="20" width="360" height="560" fill="none" stroke="#e8b933" stroke-width="3"/>
+  <g transform="translate(200 250)" fill="none" stroke="#e8b933" stroke-width="4">
+    <rect x="-70" y="-70" width="140" height="140" transform="rotate(45)"/>
+    <circle r="12" fill="#e8b933"/>
+  </g>
+  <text x="200" y="430" text-anchor="middle" font-family="Georgia, serif" font-size="34" font-weight="700" fill="#e8b933">Fields of Glory</text>
+  <text x="200" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="20" font-style="italic" fill="#e8b933">Tales from the Diamond</text>
+  <text x="200" y="545" text-anchor="middle" font-family="Georgia, serif" font-size="18" letter-spacing="3" fill="#e8b933">MICHAEL JANACEK</text>
+</svg>

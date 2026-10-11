@@ -1,0 +1,71 @@
+---
+import { NAV, SITE } from '../site.config';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="container inner">
+		<div>
+			<p class="name">{SITE.title}</p>
+			<p class="tagline">{SITE.tagline}</p>
+		</div>
+		<nav aria-label="Footer">
+			{NAV.map(({ href, label }) => (
+				<a href={href}>{label}</a>
+			))}
+			<a href="/rss.xml">RSS</a>
+		</nav>
+	</div>
+	<div class="container">
+		<p class="copyright">
+			&copy; {year} {SITE.author}. All rights reserved.
+		</p>
+	</div>
+</footer>
+
+<style>
+	.inner {
+		display: flex;
+		justify-content: space-between;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+		padding-block: 2.5rem 1.5rem;
+	}
+
+	p {
+		margin: 0;
+	}
+
+	.name {
+		font-family: var(--font-display);
+		font-size: 1.4rem;
+		font-weight: 700;
+		color: var(--color-accent);
+	}
+
+	.tagline {
+		opacity: 0.85;
+	}
+
+	nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		align-items: center;
+	}
+
+	nav a {
+		color: inherit;
+	}
+
+	nav a:hover {
+		color: var(--color-accent);
+	}
+
+	.copyright {
+		padding-bottom: 2rem;
+		font-size: 0.9rem;
+		opacity: 0.75;
+	}
+</style>

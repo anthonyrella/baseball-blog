@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES, type CategoryKey } from '../site.config';
+import PostCard from './PostCard.astro';
+
+interface Props {
+	posts: CollectionEntry<'posts'>[];
+	active?: CategoryKey;
+}
+
+const { posts, active } = Astro.props;
+---
+
+<nav class="pill-nav" aria-label="Categories">
+	<a href="/blog/" aria-current={active ? undefined : 'page'}>
+		All
+	</a>
+	{Object.entries(CATEGORIES).map(([key, { label }]) => (
+		<a href={`/blog/category/${key}/`} aria-current={key === active ? 'page' : undefined}>
+			{label}
+		</a>
+	))}
+</nav>
+
+{posts.length > 0 ? (
+	<div class="grid">
+		{posts.map((post) => (
+			<PostCard post={post} />
+		))}
+	</div>
+) : (
+	<p class="muted">Nothing here yet — check back soon.</p>
+)}

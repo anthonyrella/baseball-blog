@@ -1,0 +1,132 @@
+---
+import { type CollectionEntry, render } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
+import PostCard from '../../components/PostCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, readingTime } from '../../lib/content';
+import { CATEGORIES, SITE } from '../../site.config';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
+}
+
+interface Props {
+	post: CollectionEntry<'posts'>;
+	posts: CollectionEntry<'posts'>[];
+}
+
+const { post, posts } = Astro.props;
+const { title, description, pubDate, updatedDate, category, tags, heroImage, heroAlt } = post.data;
+const { Content } = await render(post);
+const related = posts.filter((p) => p.id !== post.id && p.data.category === category).slice(0, 2);
+---
+
+<BaseLayout title={title} description={description} image={heroImage} type="article">
+	<article class="post">
+		<header class="narrow post-header">
+			<p class="eyebrow">
+				<a href={`/blog/category/${category}/`}>{CATEGORIES[category].label}</a>
+			</p>
+			<h1>{title}</h1>
+			<p class="lede">{description}</p>
+			<p class="byline muted">
+				By {SITE.author} · <FormattedDate date={pubDate} /> · {readingTime(post.body)}
+				{updatedDate && (
+					<>
+						{' '}
+						· Updated <FormattedDate date={updatedDate} />
+					</>
+				)}
+			</p>
+		</header>
+
+		{heroImage && (
+			<figure class="container hero">
+				<img src={heroImage} alt={heroAlt ?? ''} />
+				{heroAlt && <figcaption class="muted">{heroAlt}</figcaption>}
+			</figure>
+		)}
+
+		<div class="narrow prose post-body">
+			<Content />
+		</div>
+
+		{tags.length > 0 && (
+			<footer class="narrow post-footer">
+				<ul class="tag-list" aria-label="Tags">
+					{tags.map((tag) => (
+						<li class="tag">{tag}</li>
+					))}
+				</ul>
+			</footer>
+		)}
+	</article>
+
+	{related.length > 0 && (
+		<section class="section related">
+			<div class="container">
+				<h2>More {CATEGORIES[category].label}</h2>
+				<div class="grid">
+					{related.map((p) => (
+						<PostCard post={p} />
+					))}
+				</div>
+			</div>
+		</section>
+	)}
+</BaseLayout>
+
+<style>
+	.post-header {
+		padding-top: clamp(2.5rem, 6vw, 4rem);
+		margin-bottom: 2rem;
+	}
+
+	.eyebrow a {
+		color: var(--color-label);
+		text-decoration: none;
+	}
+
+	.lede {
+		font-size: 1.3rem;
+		color: var(--color-muted);
+		margin: 0 0 1rem;
+	}
+
+	.byline {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	.hero {
+		margin-block: 0 2.5rem;
+	}
+
+	.hero img {
+		width: 100%;
+		max-height: 34rem;
+		object-fit: cover;
+		border-radius: var(--radius);
+	}
+
+	.hero figcaption {
+		margin-top: 0.5rem;
+		font-size: 0.9rem;
+	}
+
+	.post-body {
+		font-size: 1.25rem;
+	}
+
+	.post-footer {
+		margin-block: 2.5rem 1rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--color-border);
+	}
+
+	.related {
+		background: var(--color-surface);
+		margin-top: 3rem;
+	}
+</style>

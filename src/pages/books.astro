@@ -1,0 +1,53 @@
+---
+import BookCard from '../components/BookCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBooks } from '../lib/content';
+
+const books = await getBooks();
+const published = books.filter((b) => b.data.status === 'published');
+const upcoming = books.filter((b) => b.data.status === 'coming-soon');
+---
+
+<BaseLayout title="Books" description="Books by Michael Janacek, including Fields of Glory: Tales from the Diamond.">
+	<section class="section">
+		<div class="narrow">
+			<p class="eyebrow">On the shelf</p>
+			<h1>Books</h1>
+			<div class="stack">
+				{published.map((book) => (
+					<BookCard book={book} />
+				))}
+			</div>
+
+			{upcoming.length > 0 && (
+				<>
+					<h2 class="upcoming-heading">On deck</h2>
+					<div class="stack">
+						{upcoming.map((book) => (
+							<BookCard book={book} />
+						))}
+					</div>
+				</>
+			)}
+
+			<p class="muted follow">
+				Want to know when the next book lands? Follow the <a href="/blog/category/book-news/">Book News</a> section.
+			</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.stack {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.upcoming-heading {
+		margin-top: 3.5rem;
+	}
+
+	.follow {
+		margin-top: 3rem;
+	}
+</style>

@@ -1,0 +1,133 @@
+---
+import BookCard from '../components/BookCard.astro';
+import PostCard from '../components/PostCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getBooks, getPosts, getQuestions } from '../lib/content';
+import { SITE } from '../site.config';
+
+const posts = await getPosts();
+const featured = posts.find((p) => p.data.featured) ?? posts[0];
+const latest = posts.filter((p) => p !== featured).slice(0, 3);
+const books = (await getBooks()).filter((b) => b.data.status === 'published');
+const [latestQuestion] = await getQuestions();
+---
+
+<BaseLayout>
+	<section class="hero">
+		<div class="container">
+			<div class="hero-inner">
+				<p class="eyebrow">{SITE.author}</p>
+				<h1>{SITE.tagline}</h1>
+				<p class="hero-lede">
+					Stories of the heroes, legends, and wonderfully strange moments that make baseball the greatest game there is.
+				</p>
+				<p class="hero-actions">
+					<a class="btn btn-accent" href="/books/">
+						Explore the books
+					</a>
+					<a class="btn" href="/blog/">
+						Read the latest
+					</a>
+				</p>
+			</div>
+		</div>
+	</section>
+
+	{featured && (
+		<section class="section">
+			<div class="container">
+				<p class="eyebrow">Featured</p>
+				<PostCard post={featured} size="large" />
+			</div>
+		</section>
+	)}
+
+	{latest.length > 0 && (
+		<section class="section band">
+			<div class="container">
+				<div class="section-heading">
+					<h2>Latest from the press box</h2>
+					<a href="/blog/">All writing →</a>
+				</div>
+				<div class="grid">
+					{latest.map((post) => (
+						<PostCard post={post} />
+					))}
+				</div>
+			</div>
+		</section>
+	)}
+
+	<section class="section">
+		<div class="container">
+			<div class="section-heading">
+				<h2>Books by {SITE.authorShort}</h2>
+				<a href="/books/">All books →</a>
+			</div>
+			<div class="books">
+				{books.map((book) => (
+					<BookCard book={book} showDescription={false} />
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section band">
+		<div class="narrow qa-teaser">
+			<p class="eyebrow">Q&amp;A</p>
+			<h2>Got a question about the game?</h2>
+			{latestQuestion && (
+				<p>
+					Most recently answered: <a href={`/questions/#${latestQuestion.id}`}>{latestQuestion.data.question}</a>
+				</p>
+			)}
+			<p>
+				<a class="btn btn-accent" href="/questions/#ask">
+					Ask {SITE.authorShort}
+				</a>
+			</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		background: radial-gradient(circle at 85% 20%, rgb(242 194 48 / 25%), transparent 45%), var(--color-surface);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.hero-inner {
+		padding-block: clamp(3rem, 9vw, 6.5rem);
+		max-width: 52rem;
+	}
+
+	.hero h1 {
+		font-size: clamp(2.5rem, 6vw, 4.2rem);
+	}
+
+	.hero-lede {
+		font-size: 1.35rem;
+		max-width: 38rem;
+	}
+
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin: 2rem 0 0;
+	}
+
+	.band {
+		background: var(--color-surface);
+	}
+
+	.books {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+	}
+
+	.qa-teaser {
+		text-align: center;
+	}
+</style>

@@ -1,0 +1,17 @@
+---
+import PostList from '../../components/PostList.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+---
+
+<BaseLayout title="Writing" description="Stories, thoughts, articles, and book news from Michael Janacek.">
+	<section class="section">
+		<div class="container">
+			<p class="eyebrow">From the press box</p>
+			<h1>Writing</h1>
+			<PostList posts={posts} />
+		</div>
+	</section>
+</BaseLayout>

@@ -1,0 +1,102 @@
+---
+import { type CollectionEntry, render } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	book: CollectionEntry<'books'>;
+	showDescription?: boolean;
+}
+
+const { book, showDescription = true } = Astro.props;
+const { title, subtitle, status, cover, amazonUrl, releaseDate } = book.data;
+const { Content } = await render(book);
+---
+
+<article class="book card">
+	<div class="cover">
+		{cover ? (
+			<img src={cover} alt={`Cover of ${title}`} loading="lazy" />
+		) : (
+			<div class="cover-placeholder" aria-hidden="true">
+				Coming
+				<br />
+				Soon
+			</div>
+		)}
+	</div>
+	<div class="details">
+		<p class="eyebrow">{status === 'published' ? 'Available now' : 'Coming soon'}</p>
+		<h3>{title}</h3>
+		{subtitle && <p class="subtitle">{subtitle}</p>}
+		{releaseDate && (
+			<p class="muted">
+				{status === 'published' ? 'Released ' : 'Expected '}
+				<FormattedDate date={releaseDate} />
+			</p>
+		)}
+		{showDescription && (
+			<div class="prose">
+				<Content />
+			</div>
+		)}
+		{amazonUrl && (
+			<p class="actions">
+				<a class="btn btn-accent" href={amazonUrl} rel="noopener" target="_blank">
+					Buy on Amazon
+				</a>
+			</p>
+		)}
+	</div>
+</article>
+
+<style>
+	.book {
+		display: grid;
+		grid-template-columns: minmax(8rem, 12rem) 1fr;
+		gap: 1.75rem;
+		padding: 1.5rem;
+	}
+
+	.cover img,
+	.cover-placeholder {
+		width: 100%;
+		aspect-ratio: 2 / 3;
+		border-radius: 3px;
+		box-shadow: var(--shadow);
+	}
+
+	.cover-placeholder {
+		display: grid;
+		place-items: center;
+		text-align: center;
+		background: repeating-linear-gradient(45deg, var(--color-surface) 0 12px, var(--color-bg) 12px 24px);
+		border: 2px dashed var(--color-border);
+		font-family: var(--font-display);
+		font-weight: 700;
+		color: var(--color-muted);
+	}
+
+	h3 {
+		margin-bottom: 0.2em;
+	}
+
+	.subtitle {
+		margin: 0 0 0.75rem;
+		font-style: italic;
+		color: var(--color-muted);
+	}
+
+	.actions {
+		margin: 1.25rem 0 0;
+	}
+
+	@media (max-width: 34rem) {
+		.book {
+			grid-template-columns: 1fr;
+		}
+
+		.cover {
+			max-width: 12rem;
+		}
+	}
+</style>

@@ -1,0 +1,32 @@
+---
+import PostList from '../../../components/PostList.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getPosts } from '../../../lib/content';
+import { CATEGORIES, type CategoryKey } from '../../../site.config';
+
+export function getStaticPaths() {
+	return Object.keys(CATEGORIES).map((category) => ({ params: { category } }));
+}
+
+const category = Astro.params.category as CategoryKey;
+const { label, blurb } = CATEGORIES[category];
+const posts = await getPosts(category);
+---
+
+<BaseLayout title={label} description={blurb}>
+	<section class="section">
+		<div class="container">
+			<p class="eyebrow">Writing</p>
+			<h1>{label}</h1>
+			<p class="muted blurb">{blurb}</p>
+			<PostList posts={posts} active={category} />
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.blurb {
+		margin: -0.25rem 0 1.75rem;
+		font-size: 1.2rem;
+	}
+</style>
