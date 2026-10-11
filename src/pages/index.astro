@@ -1,89 +1,102 @@
 ---
-import BookCard from '../components/BookCard.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import PostCard from '../components/PostCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getBooks, getPosts, getQuestions } from '../lib/content';
-import { SITE } from '../site.config';
+import { CATEGORIES, SITE } from '../site.config';
 
 const posts = await getPosts();
 const featured = posts.find((p) => p.data.featured) ?? posts[0];
-const latest = posts.filter((p) => p !== featured).slice(0, 3);
+const others = posts.filter((p) => p !== featured);
+const sidebar = others.slice(0, 4);
+const latest = others.slice(0, 3);
 const books = (await getBooks()).filter((b) => b.data.status === 'published');
-const [latestQuestion] = await getQuestions();
+const questions = (await getQuestions()).slice(0, 2);
 ---
 
 <BaseLayout>
-	<section class="hero">
-		<div class="container">
-			<div class="hero-inner">
-				<p class="eyebrow">{SITE.author}</p>
-				<h1>{SITE.tagline}</h1>
-				<p class="hero-lede">
-					Stories of the heroes, legends, and wonderfully strange moments that make baseball the greatest game there is.
-				</p>
-				<p class="hero-actions">
-					<a class="btn btn-accent" href="/books/">
-						Explore the books
-					</a>
-					<a class="btn" href="/blog/">
-						Read the latest
-					</a>
-				</p>
-			</div>
-		</div>
-	</section>
-
 	{featured && (
-		<section class="section">
-			<div class="container">
-				<p class="eyebrow">Featured</p>
-				<PostCard post={featured} size="large" />
-			</div>
-		</section>
-	)}
+		<section class="container front-page">
+			<article class="lead">
+				<p class="eyebrow">
+					Today's Feature ·{' '}
+					<a href={`/blog/category/${featured.data.category}/`}>{CATEGORIES[featured.data.category].label}</a>
+				</p>
+				<h1>
+					<a href={`/blog/${featured.id}/`}>{featured.data.title}</a>
+				</h1>
+				<p class="lead-dek">{featured.data.description}</p>
+				<p class="lead-meta muted">
+					By {SITE.author} · <FormattedDate date={featured.data.pubDate} />
+				</p>
+				<p>
+					<a class="btn btn-accent" href={`/blog/${featured.id}/`}>
+						Read the story
+					</a>
+				</p>
+			</article>
 
-	{latest.length > 0 && (
-		<section class="section band">
-			<div class="container">
-				<div class="section-heading">
-					<h2>Latest from the press box</h2>
-					<a href="/blog/">All writing →</a>
-				</div>
-				<div class="grid">
-					{latest.map((post) => (
-						<PostCard post={post} />
+			<aside class="also">
+				<h2 class="also-title">Also in this edition</h2>
+				<ol>
+					{sidebar.map((post) => (
+						<li>
+							<p class="eyebrow">{CATEGORIES[post.data.category].label}</p>
+							<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+						</li>
 					))}
-				</div>
-			</div>
+				</ol>
+			</aside>
 		</section>
 	)}
 
 	<section class="section">
 		<div class="container">
-			<div class="section-heading">
-				<h2>Books by {SITE.authorShort}</h2>
-				<a href="/books/">All books →</a>
+			<h2 class="ornament section-title">The Latest</h2>
+			<div class="grid">
+				{latest.map((post) => (
+					<PostCard post={post} />
+				))}
 			</div>
-			<div class="books">
+			<p class="center">
+				<a class="btn" href="/blog/">
+					All writing
+				</a>
+			</p>
+		</div>
+	</section>
+
+	<section class="section bookstand">
+		<div class="container">
+			<h2 class="ornament section-title">At the Bookstand</h2>
+			<div class="tickets">
 				{books.map((book) => (
-					<BookCard book={book} showDescription={false} />
+					<a class="ticket" href="/books/">
+						{book.data.cover && <img src={book.data.cover} alt="" loading="lazy" />}
+						<span class="ticket-body">
+							<span class="eyebrow">Admit one reader</span>
+							<span class="ticket-title">{book.data.title}</span>
+							{book.data.subtitle && <span class="ticket-sub">{book.data.subtitle}</span>}
+						</span>
+					</a>
 				))}
 			</div>
 		</div>
 	</section>
 
-	<section class="section band">
-		<div class="narrow qa-teaser">
-			<p class="eyebrow">Q&amp;A</p>
-			<h2>Got a question about the game?</h2>
-			{latestQuestion && (
-				<p>
-					Most recently answered: <a href={`/questions/#${latestQuestion.id}`}>{latestQuestion.data.question}</a>
-				</p>
-			)}
-			<p>
+	<section class="section">
+		<div class="narrow">
+			<h2 class="ornament section-title">Letters from the Bleachers</h2>
+			{questions.map((q) => (
+				<blockquote class="letter">
+					<p class="letter-q">“{q.data.question}”</p>
+					<footer class="muted">— {q.data.askedBy}</footer>
+					<a href={`/questions/#${q.id}`}>Read {SITE.authorShort}'s answer</a>
+				</blockquote>
+			))}
+			<p class="center">
 				<a class="btn btn-accent" href="/questions/#ask">
-					Ask {SITE.authorShort}
+					Write to {SITE.authorShort}
 				</a>
 			</p>
 		</div>
@@ -91,43 +104,206 @@ const [latestQuestion] = await getQuestions();
 </BaseLayout>
 
 <style>
-	.hero {
-		background: radial-gradient(circle at 85% 20%, rgb(242 194 48 / 25%), transparent 45%), var(--color-surface);
+	.front-page {
+		display: grid;
+		grid-template-columns: minmax(0, 2fr) minmax(16rem, 1fr);
+		gap: 3rem;
+		padding-block: 3rem;
 		border-bottom: 1px solid var(--color-border);
 	}
 
-	.hero-inner {
-		padding-block: clamp(3rem, 9vw, 6.5rem);
-		max-width: 52rem;
+	.lead h1 {
+		font-size: clamp(2.4rem, 5.5vw, 4rem);
+		font-weight: 900;
 	}
 
-	.hero h1 {
-		font-size: clamp(2.5rem, 6vw, 4.2rem);
+	.lead h1 a {
+		color: inherit;
+		text-decoration: none;
 	}
 
-	.hero-lede {
+	.lead h1 a:hover {
+		color: var(--color-link);
+	}
+
+	.lead .eyebrow a {
+		color: var(--color-primary);
+	}
+
+	.lead-dek {
 		font-size: 1.35rem;
-		max-width: 38rem;
+		font-style: italic;
+		margin: 0 0 1rem;
 	}
 
-	.hero-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-		margin: 2rem 0 0;
+	.lead-meta {
+		margin: 0 0 1.75rem;
 	}
 
-	.band {
-		background: var(--color-surface);
+	.also {
+		padding-left: 2rem;
+		border-left: 3px double var(--color-secondary);
 	}
 
-	.books {
+	.also-title {
+		font-size: 1rem;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.also ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.also li {
+		padding-block: 1rem;
+		border-bottom: 1px dotted var(--color-border);
+	}
+
+	.also .eyebrow {
+		margin-bottom: 0.2rem;
+		font-size: 0.75rem;
+	}
+
+	.also li a {
+		font-family: var(--font-display);
+		font-size: 1.2rem;
+		font-weight: 700;
+		line-height: 1.25;
+		color: var(--color-heading);
+		text-decoration: none;
+	}
+
+	.also li a:hover {
+		color: var(--color-link);
+	}
+
+	.section-title {
+		margin-bottom: 2.25rem;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		white-space: nowrap;
+	}
+
+	.center {
+		margin-top: 2.5rem;
+		text-align: center;
+	}
+
+	.bookstand {
+		background: rgb(61 38 21 / 6%);
+		border-block: 1px solid var(--color-border);
+	}
+
+	.tickets {
 		display: grid;
 		gap: 2rem;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
 	}
 
-	.qa-teaser {
-		text-align: center;
+	.ticket {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		padding: 1.25rem 1.75rem;
+		background: var(--color-accent);
+		color: var(--color-on-accent);
+		text-decoration: none;
+		/* Ticket-stub notches */
+		mask:
+			radial-gradient(circle 14px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+			radial-gradient(circle 14px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+		transition: transform 0.15s;
+	}
+
+	.ticket:hover {
+		color: var(--color-on-accent);
+		transform: rotate(-1deg);
+	}
+
+	.ticket img {
+		width: 6.5rem;
+		flex-shrink: 0;
+		box-shadow: var(--shadow);
+	}
+
+	.ticket-body {
+		display: grid;
+		gap: 0.25rem;
+		padding-left: 1.5rem;
+		border-left: 2px dashed rgb(42 25 12 / 45%);
+	}
+
+	.ticket .eyebrow {
+		color: inherit;
+		margin: 0;
+	}
+
+	.ticket-title {
+		font-family: var(--font-display);
+		font-size: 1.45rem;
+		font-weight: 900;
+		line-height: 1.15;
+	}
+
+	.ticket-sub {
+		font-style: italic;
+	}
+
+	.letter {
+		margin: 0 0 2rem;
+		padding: 0 0 2rem;
+		border-bottom: 1px dotted var(--color-border);
+	}
+
+	.letter-q {
+		margin: 0 0 0.5rem;
+		font-family: var(--font-display);
+		font-size: 1.5rem;
+		font-style: italic;
+		line-height: 1.3;
+	}
+
+	.letter footer {
+		margin-bottom: 0.5rem;
+	}
+
+	@media (max-width: 52rem) {
+		.front-page {
+			grid-template-columns: 1fr;
+		}
+
+		.also {
+			padding-left: 0;
+			padding-top: 1.5rem;
+			border-left: 0;
+			border-top: 3px double var(--color-secondary);
+		}
+	}
+
+	@media (max-width: 34rem) {
+		.section-title {
+			display: block;
+			text-align: center;
+			white-space: normal;
+		}
+
+		.section-title::before,
+		.section-title::after {
+			display: none;
+		}
+
+		.ticket {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.ticket-body {
+			padding-left: 0;
+			border-left: 0;
+		}
 	}
 </style>

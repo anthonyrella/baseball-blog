@@ -6,31 +6,27 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
 	<div class="container inner">
-		<div>
-			<p class="name">{SITE.title}</p>
-			<p class="tagline">{SITE.tagline}</p>
-		</div>
+		<p class="name">{SITE.title}</p>
+		<p class="tagline">{SITE.tagline}</p>
 		<nav aria-label="Footer">
 			{NAV.map(({ href, label }) => (
 				<a href={href}>{label}</a>
 			))}
 			<a href="/rss.xml">RSS</a>
 		</nav>
-	</div>
-	<div class="container">
 		<p class="copyright">
-			&copy; {year} {SITE.author}. All rights reserved.
+			&copy; {year} {SITE.author} · All rights reserved
 		</p>
 	</div>
 </footer>
 
 <style>
 	.inner {
-		display: flex;
-		justify-content: space-between;
-		gap: 1.5rem;
-		flex-wrap: wrap;
-		padding-block: 2.5rem 1.5rem;
+		display: grid;
+		justify-items: center;
+		gap: 0.75rem;
+		padding-block: 3rem 2.25rem;
+		text-align: center;
 	}
 
 	p {
@@ -38,25 +34,32 @@ const year = new Date().getFullYear();
 	}
 
 	.name {
-		font-family: var(--font-display);
-		font-size: 1.4rem;
-		font-weight: 700;
+		font-family: var(--font-brand);
+		font-size: 1.8rem;
 		color: var(--color-accent);
 	}
 
 	.tagline {
+		font-style: italic;
 		opacity: 0.85;
 	}
 
 	nav {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem 1.5rem;
-		align-items: center;
+		justify-content: center;
+		gap: 0.5rem 1.75rem;
+		margin-block: 0.75rem;
+		padding-block: 0.75rem;
+		border-block: 1px solid rgb(244 233 207 / 25%);
 	}
 
 	nav a {
 		color: inherit;
+		font-size: 0.85rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		text-decoration: none;
 	}
 
 	nav a:hover {
@@ -64,8 +67,7 @@ const year = new Date().getFullYear();
 	}
 
 	.copyright {
-		padding-bottom: 2rem;
-		font-size: 0.9rem;
-		opacity: 0.75;
+		font-size: 0.85rem;
+		opacity: 0.7;
 	}
 </style>

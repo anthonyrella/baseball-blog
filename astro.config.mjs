@@ -9,6 +9,14 @@ export default defineConfig({
 	integrations: [sitemap()],
 	fonts: [
 		{
+			provider: fontProviders.google(),
+			name: 'Rye',
+			cssVariable: '--font-brand',
+			weights: [400],
+			styles: ['normal'],
+			fallbacks: ['Georgia', 'serif'],
+		},
+		{
 			// Calibri can't be embedded on the web; Carlito is its free, metric-compatible twin.
 			provider: fontProviders.google(),
 			name: 'Carlito',
